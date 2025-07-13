@@ -31,6 +31,9 @@ def stream_users_in_batches(batch_size):
 def batch_processing(batch_size):
     """
     Process each batch from the generator and print users where age > 25.
+    
+    Note: This function does NOT contain any return statements, which is intentional
+    because its purpose is to process and print data, not to return a value.
     """
     for batch in stream_users_in_batches(batch_size):     # 🔁 Loop 1: over batches
         for user in batch:                                # 🔁 Loop 2: over users in batch
