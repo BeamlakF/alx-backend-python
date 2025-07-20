@@ -60,3 +60,29 @@ class TestMemoize(unittest.TestCase):
             self.assertEqual(obj.a_property(), 42)
             self.assertEqual(obj.a_property(), 42)
             mock.assert_called_once()
+class TestMemoize(unittest.TestCase):
+    """Test cases for the memoize decorator"""
+
+    def test_memoize(self):
+        """Test that a method is only called once when memoized"""
+
+        class TestClass:
+            """Dummy class with a memoized property"""
+
+            def a_method(self) -> int:
+                """Regular method returning a fixed value"""
+                return 42
+
+            @memoize
+            def a_property(self) -> int:
+                """Memoized method that returns result of a_method"""
+                return self.a_method()
+
+        with patch.object(TestClass, 'a_method') as mock:
+            mock.return_value = 42
+            obj = TestClass()
+
+            self.assertEqual(obj.a_property(), 42)
+            self.assertEqual(obj.a_property(), 42)
+
+            mock.assert_called_once()
