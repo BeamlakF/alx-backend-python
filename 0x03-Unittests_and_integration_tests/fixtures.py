@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fixtures for testing GithubOrgClient"""
+"""Fixtures for testing GithubOrgClient."""
 
 org_payload = {
     "login": "test_org",
@@ -11,12 +11,12 @@ org_payload = {
 repos_payload = [
     {"name": "repo1", "license": {"key": "apache-2.0"}},
     {"name": "repo2", "license": {"key": "mit"}},
-    {"name": "repo3", "license": {"key": "apache-2.0"}},
+    {"name": "repo3", "license": {"key": "apache-2.0"}}
 ]
 
 expected_repos = ["repo1", "repo2", "repo3"]
 
 apache2_repos = [
     {"name": "repo1", "license": {"key": "apache-2.0"}},
-    {"name": "repo3", "license": {"key": "apache-2.0"}},
+    {"name": "repo3", "license": {"key": "apache-2.0"}}
 ]
