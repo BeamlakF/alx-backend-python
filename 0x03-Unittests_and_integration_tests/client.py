@@ -3,7 +3,6 @@
 
 from utils import get_json  
 
-
 class GithubOrgClient:
     """GitHub organization client."""
 
