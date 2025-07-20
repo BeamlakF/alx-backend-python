@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 """Client module."""
 
-import requests
-
-
-def get_json(url):
-    """Make an HTTP GET request and return the JSON result."""
-    response = requests.get(url)
-    return response.json()
+from utils import get_json
 
 
 class GithubOrgClient:
