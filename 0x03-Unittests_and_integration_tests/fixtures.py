@@ -4,7 +4,8 @@
 org_payload = {
     "login": "test_org",
     "id": 123456,
-    "url": "https://api.github.com/orgs/test_org"
+    "url": "https://api.github.com/orgs/test_org",
+    "repos_url": "https://api.github.com/orgs/test_org/repos"
 }
 
 repos_payload = [
