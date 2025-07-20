@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fixtures for testing GitHubOrgClient."""
+"""Fixtures for testing GithubOrgClient"""
 
 org_payload = {
     "login": "test_org",
