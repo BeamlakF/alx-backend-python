@@ -7,11 +7,8 @@ import unittest
 from unittest.mock import patch, PropertyMock, MagicMock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 import fixtures
-print("Loaded fixtures:", dir(fixtures))
+
 
 class TestGithubOrgClient(unittest.TestCase):
     """Test suite for GithubOrgClient"""
