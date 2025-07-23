@@ -1,66 +1,75 @@
 #!/usr/bin/env python3
-"""Utils module."""
-
-from typing import Mapping, Any, Sequence, Union, Callable
+"""Generic utilities for github org client.
+"""
 import requests
 from functools import wraps
+from typing import (
+    Mapping,
+    Sequence,
+    Any,
+    Dict,
+    Callable,
+)
+
+__all__ = [
+    "access_nested_map",
+    "get_json",
+    "memoize",
+]
 
 
-def access_nested_map(nested_map: Mapping, path: Sequence) -> Union[Any, None]:
+def access_nested_map(nested_map: Mapping, path: Sequence) -> Any:
+    """Access nested map with key path.
+    Parameters
+    ----------
+    nested_map: Mapping
+        A nested map
+    path: Sequence
+        a sequence of key representing a path to the value
+    Example
+    -------
+    >>> nested_map = {"a": {"b": {"c": 1}}}
+    >>> access_nested_map(nested_map, ["a", "b", "c"])
+    1
     """
-    Access value in a nested map with a given path.
-
-    Args:
-        nested_map (Mapping): The nested mapping to traverse.
-        path (Sequence): Sequence of keys to traverse the nested_map.
-
-    Returns:
-        The value found at the nested path.
-
-    Raises:
-        KeyError: If any key in the path does not exist or path is invalid.
-    """
-    current = nested_map
     for key in path:
-        if not isinstance(current, Mapping):
+        if not isinstance(nested_map, Mapping):
             raise KeyError(key)
-        if key not in current:
-            raise KeyError(key)
-        current = current[key]
-    return current
+        nested_map = nested_map[key]
+
+    return nested_map
 
 
-def get_json(url: str) -> Any:
-    """
-    Fetch JSON content from a given URL.
-
-    Args:
-        url (str): The URL to make the GET request to.
-
-    Returns:
-        The JSON response parsed to Python data.
+def get_json(url: str) -> Dict:
+    """Get JSON from remote URL.
     """
     response = requests.get(url)
     return response.json()
 
 
 def memoize(fn: Callable) -> Callable:
+    """Decorator to memoize a method.
+    Example
+    -------
+    class MyClass:
+        @memoize
+        def a_method(self):
+            print("a_method called")
+            return 42
+    >>> my_object = MyClass()
+    >>> my_object.a_method
+    a_method called
+    42
+    >>> my_object.a_method
+    42
     """
-    Decorator to cache the result of a method call.
+    attr_name = "_{}".format(fn.__name__)
 
-    Args:
-        fn (Callable): The method to memoize.
-
-    Returns:
-        Callable: The memoized property.
-    """
-    attr_name = "_memoized_" + fn.__name__
-
-    @property
     @wraps(fn)
     def memoized(self):
+        """"memoized wraps"""
         if not hasattr(self, attr_name):
             setattr(self, attr_name, fn(self))
         return getattr(self, attr_name)
 
-    return memoized
+    return property(memoized)

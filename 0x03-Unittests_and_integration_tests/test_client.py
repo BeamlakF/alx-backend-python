@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch, PropertyMock, MagicMock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
-import fixtures
+import fixtures  
 
 
 class TestGithubOrgClient(unittest.TestCase):
