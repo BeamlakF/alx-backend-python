@@ -1,6 +1,9 @@
 # chats/middleware.py
 from datetime import datetime
 from django.http import HttpResponseForbidden
+from django.http import JsonResponse
+from datetime import datetime, timedelta
+from collections import defaultdict
 
 class RequestLoggingMiddleware:
     def __init__(self, get_response):
@@ -28,3 +31,54 @@ class RestrictAccessByTimeMiddleware:
             return HttpResponseForbidden("Access to chat is restricted at this time.")
 
         return self.get_response(request)
+
+
+
+class OffensiveLanguageMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.ip_message_log = defaultdict(list)
+        self.offensive_words = ['badword', 'uglyword']  # Extend as needed
+
+    def __call__(self, request):
+        if request.method == 'POST' and request.path.startswith('/api/'):
+            ip = self.get_client_ip(request)
+            now = datetime.now()
+
+            # Clean up old timestamps
+            self.ip_message_log[ip] = [
+                timestamp for timestamp in self.ip_message_log[ip]
+                if now - timestamp < timedelta(minutes=1)
+            ]
+
+            # Rate limiting
+            if len(self.ip_message_log[ip]) >= 5:
+                return JsonResponse(
+                    {"error": "Rate limit exceeded. Max 5 messages per minute."},
+                    status=429
+                )
+
+            # Offensive word check
+            if request.content_type == 'application/json':
+                try:
+                    import json
+                    body = json.loads(request.body)
+                    message = body.get('message', '')
+                    if any(word in message.lower() for word in self.offensive_words):
+                        return JsonResponse(
+                            {"error": "Offensive language detected. Message blocked."},
+                            status=403
+                        )
+                except Exception:
+                    pass  # If parsing fails, ignore silently
+
+            # Add this message timestamp
+            self.ip_message_log[ip].append(now)
+
+        return self.get_response(request)
+
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0]
+        return request.META.get('REMOTE_ADDR')
