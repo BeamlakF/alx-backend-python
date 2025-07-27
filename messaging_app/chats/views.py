@@ -1,22 +1,15 @@
-from django.shortcuts import render
-
 from rest_framework import viewsets
-from .models import Conversation, Message
-from .serializers import ConversationSerializer, MessageSerializer
+from .models import User, Conversation, Message
+from .serializers import UserSerializer, ConversationSerializer, MessageSerializer
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 class ConversationViewSet(viewsets.ModelViewSet):
-    queryset = Conversation.objects.all().order_by('-created_at')
+    queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
 
 class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all().order_by('-sent_at')
+    queryset = Message.objects.all()
     serializer_class = MessageSerializer
-
-    def perform_create(self, serializer):
-        # Automatically associate the sender as the current user if needed
-        serializer.save(sender=self.request.user)
-from rest_framework.permissions import IsAuthenticated
-
-class MessageViewSet(viewsets.ModelViewSet):
-    ...
-    permission_classes = [IsAuthenticated]
