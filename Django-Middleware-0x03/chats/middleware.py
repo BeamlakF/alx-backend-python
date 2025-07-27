@@ -82,3 +82,20 @@ class OffensiveLanguageMiddleware:
         if x_forwarded_for:
             return x_forwarded_for.split(',')[0]
         return request.META.get('REMOTE_ADDR')
+
+
+class RolePermissionMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Only check for restricted paths (e.g., /api/admin-actions/)
+        if request.path.startswith('/api/admin-actions/'):
+            user = request.user
+            if not user.is_authenticated or not hasattr(user, 'role'):
+                return HttpResponseForbidden("No role assigned or user not authenticated.")
+
+            if user.role not in ['admin', 'moderator']:
+                return HttpResponseForbidden("Insufficient role permissions.")
+
+        return self.get_response(request)
