@@ -9,6 +9,7 @@ from .serializers import MessageSerializer, ConversationSerializer
 from .permissions import IsParticipantOfConversation
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from .filters import MessageFilter
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
@@ -16,6 +17,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['conversation']
+    filterset_class = MessageFilter
 
     def perform_create(self, serializer):
         conversation_id = self.request.data.get('conversation')
