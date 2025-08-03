@@ -43,3 +43,15 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user.username}"
+
+class Reaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='reactions')
+    emoji = models.CharField(max_length=10)  # Could be 👍 ❤️ 😂 etc.
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'message', 'emoji')  # Prevent duplicate reactions
+
+    def __str__(self):
+        return f'{self.user} reacted {self.emoji} to "{self.message}"'
