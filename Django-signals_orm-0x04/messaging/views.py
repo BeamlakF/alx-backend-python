@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from .models import Message
 from django.shortcuts import get_object_or_404
+from django.views.decorators.cache import cache_page
 
 @login_required
 @require_POST
@@ -50,3 +51,9 @@ def get_threaded_messages(request):
 def inbox(request):
     unread_messages = Message.unread.unread_for_user(request.user).only('id', 'content', 'sender', 'created_at')
     return render(request, 'messaging/inbox.html', {'messages': unread_messages})
+
+@cache_page(60)  # cache this view for 60 seconds
+def message_list_view(request, conversation_id):
+    # your existing code to fetch messages
+    messages = Message.objects.filter(conversation_id=conversation_id).select_related('sender', 'receiver')
+    return render(request, 'chats/message_list.html', {'messages': messages})
