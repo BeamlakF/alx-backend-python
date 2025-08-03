@@ -10,7 +10,7 @@ class Message(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     
-    parent = models.ForeignKey(
+    parent_message = models.ForeignKey(
         'self',  # self-referential
         null=True,
         blank=True,
