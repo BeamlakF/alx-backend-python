@@ -46,7 +46,7 @@ def get_threaded_messages(request):
 ).select_related('sender', 'receiver', 'parent_message').prefetch_related('replies')
     return render(request, 'messages/threaded.html', {'messages': messages})
 
+
 def inbox(request):
-    unread_messages = Message.unread.unread_for_user(request.user)
-    # do whatever you need with unread_messages, e.g. pass to template
+    unread_messages = Message.unread.unread_for_user(request.user).only('id', 'content', 'sender', 'created_at')
     return render(request, 'messaging/inbox.html', {'messages': unread_messages})
