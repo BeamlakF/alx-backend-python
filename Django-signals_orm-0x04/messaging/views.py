@@ -39,3 +39,10 @@ def get_thread(request, message_id):
     }
 
     return JsonResponse(thread, safe=False)
+
+def get_threaded_messages(request):
+    messages = Message.objects.filter(receiver=request.user)\
+        .select_related('sender', 'receiver', 'parent_message')\
+        .prefetch_related('replies')
+    
+    return render(request, 'messages/threaded.html', {'messages': messages})

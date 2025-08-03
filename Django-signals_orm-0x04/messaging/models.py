@@ -7,12 +7,19 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     edited = models.BooleanField(default=False)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     
+    parent = models.ForeignKey(
+        'self',  # self-referential
+        null=True,
+        blank=True,
+        related_name='replies',
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return f"From {self.sender} to {self.receiver}"
     
 
     def __str__(self):
