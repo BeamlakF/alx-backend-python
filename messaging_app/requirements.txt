@@ -1,0 +1,4 @@
+Django>=4.0,<5.0
+djangorestframework>=3.12,<4.0
+gunicorn>=20.0,<21.0          # If you plan to use Gunicorn in production
+psycopg2-binary>=2.8          # If using PostgreSQL (optional, based on your DB)
