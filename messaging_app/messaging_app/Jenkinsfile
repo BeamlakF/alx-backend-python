@@ -37,3 +37,14 @@ pipeline {
         }
     }
 }
+stage('Build & Push Docker Image') {
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+            bat """
+            docker build -t %DOCKER_USER%/messaging-app:latest .
+            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+            docker push %DOCKER_USER%/messaging-app:latest
+            """
+        }
+    }
+}
