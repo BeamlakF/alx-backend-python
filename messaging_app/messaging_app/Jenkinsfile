@@ -9,20 +9,22 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-pat',
-                    url: 'https://github.com/<your-username>/alx-backend-python.git',
-                    branch: 'main'
+                bat """
+                git clone https://github.com/<your-username>/alx-backend-python.git
+                cd alx-backend-python
+                git branch
+                """
             }
         }
 
-        stage('Set up Python & Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 bat """
+                cd ${APP_DIR}
                 python -m venv .venv
                 call .\\.venv\\Scripts\\activate
-                python -m pip install --upgrade pip
-                if exist requirements.txt pip install -r requirements.txt
-                pip install pytest pytest-junit
+                if exist requirements.txt pip3 install -r requirements.txt
+                pip3 install pytest
                 """
             }
         }
@@ -30,13 +32,14 @@ pipeline {
         stage('Run Tests') {
             steps {
                 bat """
+                cd ${APP_DIR}
                 call .\\.venv\\Scripts\\activate
-                pytest -q --junitxml=%PYTEST_JUNIT%
+                pytest --junitxml=${PYTEST_JUNIT}
                 """
             }
             post {
                 always {
-                    junit allowEmptyResults: true, testResults: "%PYTEST_JUNIT%"
+                    junit allowEmptyResults: true, testResults: "${PYTEST_JUNIT}"
                 }
             }
         }
