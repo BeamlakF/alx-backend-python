@@ -9,11 +9,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                bat """
-                git clone https://github.com/<your-username>/alx-backend-python.git
-                cd alx-backend-python
-                git branch
-                """
+                // Using credentialsId for GitHub
+                git branch: 'main',
+                    credentialsId: 'github-pat',
+                    url: 'https://github.com/<your-username>/alx-backend-python.git'
             }
         }
 
