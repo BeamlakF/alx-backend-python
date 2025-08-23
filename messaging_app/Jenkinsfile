@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_DIR = 'messaging_app'
+        PYTEST_JUNIT = "${APP_DIR}\\pytest-report.xml"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git credentialsId: 'github-pat',
+                    url: 'https://github.com/<your-username>/alx-backend-python.git',
+                    branch: 'main'
+            }
+        }
+
+        stage('Set up Python & Dependencies') {
+            steps {
+                bat """
+                python -m venv .venv
+                call .\\.venv\\Scripts\\activate
+                python -m pip install --upgrade pip
+                if exist requirements.txt pip install -r requirements.txt
+                pip install pytest pytest-junit
+                """
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                bat """
+                call .\\.venv\\Scripts\\activate
+                pytest -q --junitxml=%PYTEST_JUNIT%
+                """
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: "%PYTEST_JUNIT%"
+                }
+            }
+        }
+    }
+}
